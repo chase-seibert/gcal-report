@@ -15,4 +15,8 @@ def _build_service():
 
 def get_calendar_list():
     service = _build_service()
-    return service.calendarList().list().execute()
+    calendars = service.calendarList().list().execute()
+    ids = []
+    for item in calendars.get('items'):
+        ids.append(item.get('id'))
+    return sorted(ids)

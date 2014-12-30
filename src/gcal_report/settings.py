@@ -13,8 +13,10 @@ class Settings(object):
         if os.path.exists(self.path):
             self.config.read(self.path)
 
-    def get(self, section, setting):
-        return self.config.get(section, setting)
+    def get(self, section, setting, default=None):
+        if not self.has_section(section):
+            return default
+        return self.config.get(section, setting, default)
 
     def has_section(self, section):
         return self.config.has_section(section)
@@ -42,8 +44,8 @@ def update(config):
     print 'Wrote %s' % _settings.path
 
 
-def get_setting(section, setting):
-    return _settings.get(section, setting)
+def get_setting(section, setting, default=None):
+    return _settings.get(section, setting, default)
 
 
 def get_section_settings(section):

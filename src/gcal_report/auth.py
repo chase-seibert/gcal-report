@@ -23,6 +23,7 @@ def generate_access_token(client_id, client_secret):
 def get_authorized_http():
     storage = Storage(_CREDENTIALS)
     credentials = storage.get()
+    # TODO: this can auto-reauth if needed...
     if credentials is None or credentials.invalid:
         print 'Invalid credentials, you need to login again'
         exit(1)

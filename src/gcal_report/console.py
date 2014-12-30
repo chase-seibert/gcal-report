@@ -28,8 +28,23 @@ def login(options):
     })
 
 
-def list(options):
-    print gcal.get_calendar_list()
+def print_list(options):
+    for calendar_id in gcal.get_calendar_list():
+        print calendar_id
+
+
+def add(options):
+    if options.id not in gcal.get_calendar_list():
+        print 'This ID is not in the list of calendars'
+        exit(1)
+    team_name = options.team
+    team_calendar_ids = settings.get_setting('Teams', team_name, '').split(',')
+    team_calendar_ids.append(options.id)
+    team_calendar_ids = list(id for id in set(team_calendar_ids) if id)
+    team_calendar_ids = ','.join(team_calendar_ids)
+    settings.update_section('Teams', {
+        team_name: team_calendar_ids,
+    })
 
 
 def create_arg_parser():
@@ -43,7 +58,12 @@ def create_arg_parser():
     _auth.set_defaults(func=login)
 
     _list = subparsers.add_parser('list')
-    _list.set_defaults(func=list)
+    _list.set_defaults(func=print_list)
+
+    _add = subparsers.add_parser('add')
+    _add.set_defaults(func=add)
+    _add.add_argument('--team', help='Team name', required=True)
+    _add.add_argument('--id', help='Calendar ID', required=True)
 
     return parser
 
