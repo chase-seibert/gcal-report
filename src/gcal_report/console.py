@@ -1,11 +1,14 @@
 import argparse
 import ConfigParser
+import datetime
 import os
+import pprint
 import sys
 
 from gcal_report import auth
 from gcal_report import gcal
 from gcal_report import settings
+from gcal_report.report import GCalReport
 
 
 def init(options):
@@ -47,6 +50,30 @@ def add(options):
     })
 
 
+def _get_calendar_ids(team):
+    try:
+        return settings.get_setting('Teams', team).split(',')
+    except KeyError:
+        print 'Team %s not defined' % team
+
+
+def _get_relative_date_range(days_ago):
+    today = datetime.date.today()
+    start = today - datetime.timedelta(days=days_ago)
+    return start, today
+
+
+def report(options):
+    calendar_ids = _get_calendar_ids(options.team)
+    start, end = _get_relative_date_range(options.days)
+    report = GCalReport()
+    for calendar_id in calendar_ids:
+        events = gcal.get_calendar_events(calendar_id, start, end)
+        report.add_events(calendar_id, events)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(report.summary())
+
+
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -64,6 +91,11 @@ def create_arg_parser():
     _add.set_defaults(func=add)
     _add.add_argument('--team', help='Team name', required=True)
     _add.add_argument('--id', help='Calendar ID', required=True)
+
+    _report = subparsers.add_parser('report')
+    _report.set_defaults(func=report)
+    _report.add_argument('--team', help='Team name', required=True)
+    _report.add_argument('--days', help='Days', type=int, default=90)
 
     return parser
 

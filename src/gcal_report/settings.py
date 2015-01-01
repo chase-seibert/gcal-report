@@ -16,7 +16,10 @@ class Settings(object):
     def get(self, section, setting, default=None):
         if not self.has_section(section):
             return default
-        return self.config.get(section, setting, default)
+        try:
+            return self.config.get(section, setting, default)
+        except ConfigParser.NoOptionError as e:
+            raise KeyError(e)
 
     def has_section(self, section):
         return self.config.has_section(section)
