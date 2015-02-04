@@ -21,6 +21,7 @@ First, you need to create a [Google API Project](https://console.developers.goog
 ./run.sh add --team DATA --id cseibert@hearsaycorp.com  # run this for each person. you are creating a list called "DATA"
 ./run.sh dump --team DATA  # show the raw meetings/day data
 ./run.sh report --team DATA  # generate a summary
+./run.sh csv --team DATA --output ~/Desktop/team_data.csv  # output raw data
 ```
 
 *Note: once you get rolling, it may be easier to hand-edit the config file at `~/.gcal-report`.*

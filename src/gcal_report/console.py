@@ -85,6 +85,11 @@ def report(options):
     pp.pprint(report.summary())
 
 
+def csv(options):
+    report = gen_gcal_report(options)
+    report.csv(options.output)
+
+
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -112,6 +117,12 @@ def create_arg_parser():
     _report.set_defaults(func=report)
     _report.add_argument('--team', help='Team name', required=True)
     _report.add_argument('--days', help='Days', type=int, default=90)
+
+    _csv = subparsers.add_parser('csv')
+    _csv.set_defaults(func=csv)
+    _csv.add_argument('--team', help='Team name', required=True)
+    _csv.add_argument('--output', help='Output CSV file path', type=str, required=True)
+    _csv.add_argument('--days', help='Days', type=int, default=90)
 
     return parser
 
