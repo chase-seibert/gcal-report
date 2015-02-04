@@ -63,13 +63,24 @@ def _get_relative_date_range(days_ago):
     return start, today
 
 
-def report(options):
+def gen_gcal_report(options):
     calendar_ids = _get_calendar_ids(options.team)
     start, end = _get_relative_date_range(options.days)
     report = GCalReport()
     for calendar_id in calendar_ids:
         events = gcal.get_calendar_events(calendar_id, start, end)
         report.add_events(calendar_id, events)
+    return report
+
+
+def dump(options):
+    report = gen_gcal_report(options)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(report.dump())
+
+
+def report(options):
+    report = gen_gcal_report(options)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(report.summary())
 
@@ -91,6 +102,11 @@ def create_arg_parser():
     _add.set_defaults(func=add)
     _add.add_argument('--team', help='Team name', required=True)
     _add.add_argument('--id', help='Calendar ID', required=True)
+
+    _dump = subparsers.add_parser('dump')
+    _dump.set_defaults(func=dump)
+    _dump.add_argument('--team', help='Team name', required=True)
+    _dump.add_argument('--days', help='Days', type=int, default=90)
 
     _report = subparsers.add_parser('report')
     _report.set_defaults(func=report)
