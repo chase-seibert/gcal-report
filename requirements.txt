@@ -1,5 +1,5 @@
 httplib2
-oauth2client
+oauth2client==1.4.12
 google-api-python-client
 python-gflags
 pandas
