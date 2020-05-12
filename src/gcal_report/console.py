@@ -49,7 +49,11 @@ def add(options):
 
 def _get_calendar_ids(team):
     try:
-        return settings.get_setting('Teams', team).split(',')
+        ids = settings.get_setting('Teams', team).split(',')
+        domain = settings.get_setting('Settings', 'domain')
+        if domain:
+            ids = [(id + domain if '@' not in id else id) for id in ids]
+        return ids
     except KeyError:
         print 'Team %s not defined' % team
 
