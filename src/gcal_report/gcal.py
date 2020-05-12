@@ -9,9 +9,7 @@ from oauth2client.file import Storage
 
 from gcal_report import auth
 from gcal_report import settings
-
-
-MAX_MINUTES_PER_EVENT = 1440  # one day
+from gcal_report import filter
 
 
 def _build_service():
@@ -46,12 +44,15 @@ def _minute_diff(start, end):
 def get_calendar_events(calendar_id, start, end, pageToken=None):
 
     service = _build_service()
+    # see: https://developers.google.com/calendar/v3/reference/events/list
     events = (service
         .events()
         .list(
             calendarId=calendar_id,
             timeMin=_format_time(start),
             timeMax=_format_time(end),
+            singleEvents=True,  # explode recurring events
+            showDeleted=False,  # not cancelled
             pageToken=pageToken,
         )
         .execute())
@@ -61,14 +62,13 @@ def get_calendar_events(calendar_id, start, end, pageToken=None):
     # pagination, see: https://developers.google.com/calendar/v3/pagination
     for event in events.get('items'):
 
+        if not filter.count_as_meeting_time(event, user=calendar_id):
+            continue
+
         id = event['id']
         if id in seen:
             continue
         seen.append(id)
-
-        status = event['status']
-        if status in ('cancelled', ):
-            continue
 
         _start = event['start']
         if 'dateTime' not in _start:
@@ -81,9 +81,6 @@ def get_calendar_events(calendar_id, start, end, pageToken=None):
 
         if start_datetime.date() < start or end_datetime.date() > end:
             # api can return items updated between timeMin and timeMax
-            continue
-
-        if minutes > MAX_MINUTES_PER_EVENT:
             continue
 
         result = {
