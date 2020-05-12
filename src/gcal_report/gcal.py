@@ -21,6 +21,7 @@ def _build_service():
 
 def get_calendar_list():
     service = _build_service()
+    # TODO pagination
     calendars = service.calendarList().list().execute()
     ids = []
     for item in calendars.get('items'):
@@ -42,7 +43,7 @@ def _minute_diff(start, end):
     return int((end - start).total_seconds() / 60)
 
 
-def get_calendar_events(calendar_id, start, end):
+def get_calendar_events(calendar_id, start, end, pageToken=None):
 
     service = _build_service()
     events = (service
@@ -51,11 +52,13 @@ def get_calendar_events(calendar_id, start, end):
             calendarId=calendar_id,
             timeMin=_format_time(start),
             timeMax=_format_time(end),
+            pageToken=pageToken,
         )
         .execute())
 
     results, seen = [], []
 
+    # pagination, see: https://developers.google.com/calendar/v3/pagination
     for event in events.get('items'):
 
         id = event['id']
@@ -92,5 +95,9 @@ def get_calendar_events(calendar_id, start, end):
         }
 
         results.append(result)
+
+    nextPageToken = events.get('nextPageToken')
+    if nextPageToken:
+        results.extend(get_calendar_events(calendar_id, start, end, nextPageToken))
 
     return sorted(results, key=lambda e: e['datetime'])

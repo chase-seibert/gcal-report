@@ -37,9 +37,6 @@ def print_list(options):
 
 
 def add(options):
-    if options.id not in gcal.get_calendar_list():
-        print 'This ID is not in the list of calendars'
-        exit(1)
     team_name = options.team
     team_calendar_ids = settings.get_setting('Teams', team_name, '').split(',')
     team_calendar_ids.append(options.id)
