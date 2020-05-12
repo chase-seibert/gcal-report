@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 ## Configuration
 
-First, you need to create a [Google API Project](https://console.developers.google.com/project). Make sure to use the Redirect URI `http://localhost:8080/`.
+First, you need to create a [Google API Project](https://console.developers.google.com/project), and then create a [Google API Credential OAuth client ID](https://console.developers.google.com/apis/credentials). Make sure to use the Redirect URI `http://localhost:8080/`.
 
 ```bash
 ./run.sh init  # create local config store
