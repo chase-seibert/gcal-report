@@ -67,7 +67,7 @@ def _get_relative_date_range(days_ago):
 def gen_gcal_report(options):
     calendar_ids = _get_calendar_ids(options.team)
     start, end = _get_relative_date_range(options.days)
-    report = GCalReport()
+    report = GCalReport(start, end)
     for calendar_id in calendar_ids:
         events = gcal.get_calendar_events(calendar_id, start, end)
         report.add_events(calendar_id, events)

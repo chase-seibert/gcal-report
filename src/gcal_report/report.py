@@ -1,11 +1,23 @@
+from datetime import date, timedelta
 from collections import defaultdict
+
 import pandas as pd
+
+
+def _dates_between(start, end):
+    delta = end - start
+    days = list()
+    for i in range(delta.days):
+        days.append(start + timedelta(days=i))
+    return days
 
 
 class GCalReport(object):
 
-    def __init__(self):
+    def __init__(self, start, end):
         self._minutes_per_day = {}
+        self.start = start
+        self.end = end
 
     def add_events(self, display_name, events):
         data = defaultdict(int)
@@ -14,11 +26,14 @@ class GCalReport(object):
         self._minutes_per_day[display_name] = dict(data)
 
     def _get_data_frame(self):
+        # see: https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html
         df = pd.DataFrame()
         people = list()
         for person, dates_dict in self._minutes_per_day.items():
             people.append(person)
-            for date, minutes in dates_dict.items():
+            # fill in empty/placeholder days, sort by day
+            for date in _dates_between(self.start, self.end):
+                minutes = dates_dict.get(date, 0)
                 df.at[date, person] = minutes
         # create summary column, sum of other columns
         df['summary'] = df.mean(axis=1)
@@ -34,4 +49,3 @@ class GCalReport(object):
     def csv(self, output_file):
         df = self._get_data_frame()
         df.to_csv(output_file)
-
