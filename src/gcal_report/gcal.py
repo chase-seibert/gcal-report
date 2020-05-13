@@ -8,6 +8,7 @@ from oauth2client.tools import run
 from oauth2client.file import Storage
 
 from gcal_report import auth
+from gcal_report import cache
 from gcal_report import settings
 from gcal_report import filter
 
@@ -43,19 +44,24 @@ def _minute_diff(start, end):
 
 def get_calendar_events(calendar_id, start, end, pageToken=None):
 
-    service = _build_service()
-    # see: https://developers.google.com/calendar/v3/reference/events/list
-    events = (service
-        .events()
-        .list(
-            calendarId=calendar_id,
-            timeMin=_format_time(start),
-            timeMax=_format_time(end),
-            singleEvents=True,  # explode recurring events
-            showDeleted=False,  # not cancelled
-            pageToken=pageToken,
-        )
-        .execute())
+    cache_key = 'events:%s:%s:%s:%s' % (calendar_id, start, end, pageToken)
+    if cache.has(cache_key):
+        events = cache.get(cache_key)
+    else:
+        service = _build_service()
+        # see: https://developers.google.com/calendar/v3/reference/events/list
+        events = (service
+            .events()
+            .list(
+                calendarId=calendar_id,
+                timeMin=_format_time(start),
+                timeMax=_format_time(end),
+                singleEvents=True,  # explode recurring events
+                showDeleted=False,  # not cancelled
+                pageToken=pageToken,
+            )
+            .execute())
+        cache.set(cache_key, events)
 
     results, seen = [], []
 

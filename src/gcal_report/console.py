@@ -6,6 +6,7 @@ import pprint
 import sys
 
 from gcal_report import auth
+from gcal_report import cache
 from gcal_report import gcal
 from gcal_report import settings
 from gcal_report.report import GCalReport
@@ -141,10 +142,11 @@ def create_arg_parser():
 
 
 def main():
+    cache.load()
     parser = create_arg_parser()
     options = parser.parse_args(sys.argv[1:])
     options.func(options)
-
+    cache.update()
 
 if __name__ == '__main__':
     main()
