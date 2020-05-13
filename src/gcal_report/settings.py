@@ -13,6 +13,11 @@ TEAMS = {
     ],
 }
 
+def event_is_meeting(event):
+    # return False if you want to exclude a specific meeting
+    # event is a dict with fields like summary, description, etc
+    return False
+
 try:
     from gcal_report.settings_override import *
 except ImportError:

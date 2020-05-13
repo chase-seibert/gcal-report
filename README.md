@@ -49,6 +49,26 @@ Teams can be named whatever you want. The user values should map to Google Apps
 user IDs, which are email addresses. If you want to omit the domain on each one,
 use the `DOMAIN` setting to set the default suffix.
 
+You can also write custom logic to filter out events, to not count them against
+meeting time.
+
+Example:
+
+```python
+def event_is_meeting(event):
+    # return False if you want to exclude a specific meeting
+    # event is a dict with fields like summary, description, etc
+    summary = event.get('summary', '')
+    for token in (
+        'lunch',
+        'happy hour',
+        'water cooler',
+    ):
+        if token in summary.lower():
+            return False
+    return True
+```
+
 ## Run Reports
 
 Show the raw meetings/day data:

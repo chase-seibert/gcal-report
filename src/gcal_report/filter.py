@@ -1,5 +1,7 @@
 from dateutil.parser import parse
 
+from gcal_report import settings
+
 
 MAX_MINUTES_PER_EVENT = 240  # arbitrary filter for fake calendar items
 
@@ -42,6 +44,12 @@ def count_as_meeting_time(event, user):
     if creator == user and num_attendees == 0:
         # personal placeholder
         return False
+
+    if hasattr(settings, 'event_is_meeting'):
+        result = settings.event_is_meeting(event)
+        if result is None:
+            return True
+        return result
 
     # print user, creator, repr(summary), num_attendees, start
     # import ipdb; ipdb.set_trace()
