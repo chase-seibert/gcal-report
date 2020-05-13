@@ -24,7 +24,7 @@ After login, your credentials are stored at `~/.gcal-report-creds`
 
 You can test your login credentials with:
 
-```
+```bash
 ./run.sh list
 ```
 
@@ -34,7 +34,7 @@ You need to define teams of people to report on.
 
 Update the `settings.py` file:
 
-```
+```python
 DOMAIN = '@example.com'
 
 TEAMS = {
