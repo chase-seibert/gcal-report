@@ -30,7 +30,7 @@ You can test your login credentials with:
 
 ## Configuration
 
-First, you need to define teams of people to report on.
+You need to define teams of people to report on.
 
 Update the `settings.py` file:
 
@@ -45,32 +45,52 @@ TEAMS = {
 }
 ```
 
+Teams can be named whatever you want. The user values should map to Google Apps
+user IDs, which are email addresses. If you want to omit the domain on each one,
+use the `DOMAIN` setting to set the default suffix.
+
 ## Run Reports
 
 Show the raw meetings/day data:
 
 ```
 >./run.sh dump --team team1
-date  meeting_hours  meeting_min
-0   2014-12-22       2.500000          150
-1   2014-11-26       0.050000            3
-2   2015-01-14       1.933333          116
-3   2014-11-24       1.616667           97
-4   2014-11-07       4.866667          292
-5   2015-01-21       9.750000          585
+                           user1    summary
+2020-02-13                 355.0    355.0
+2020-02-14                 245.0    245.0
+2020-02-15                   0.0      0.0
+2020-02-16                   0.0      0.0
+2020-02-17                  30.0     30.0
+2020-02-18                 335.0    335.0
+2020-02-19                 150.0    150.0
+2020-02-20                 355.0    355.0
+2020-02-21                 330.0    330.0
 ```
 
 Generate a summary:
 ```
 >./run.sh report --team team1
+                      user1     summary
+count             90.000000   90.000000
+mean             180.500000  180.500000
+std              143.411583  143.411583
+min                0.000000    0.000000
+25%                0.000000    0.000000
+50%              210.000000  210.000000
+75%              292.500000  292.500000
+max              495.000000  495.000000
 ```
 
-Output raw data:
+Count is the number of days. All other numbers are minutes.
+
+Save raw data:
 ```
 >./run.sh csv --team team1 --output ~/Desktop/team_data.csv
 ```
 
 Show the top meetings:
 ```
->./run.sh top --team team1
+>./run.sh top --team team1 --limit 10
+meeting 1 (120)
+meeting 2 (60)
 ```
