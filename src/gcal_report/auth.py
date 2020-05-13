@@ -25,7 +25,7 @@ def get_authorized_http():
     credentials = storage.get()
     # TODO: this can auto-reauth if needed...
     if credentials is None or credentials.invalid:
-        print 'Invalid credentials, you need to login again'
+        print 'Invalid credentials, run `./run.sh login`'
         exit(1)
     http = httplib2.Http()
     return credentials.authorize(http)

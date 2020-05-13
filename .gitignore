@@ -2,3 +2,4 @@
 .ropeproject
 *.pyc
 cache.json
+settings_override.py

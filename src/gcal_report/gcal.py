@@ -9,7 +9,6 @@ from oauth2client.file import Storage
 
 from gcal_report import auth
 from gcal_report import cache
-from gcal_report import settings
 from gcal_report import filter
 
 
