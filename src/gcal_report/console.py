@@ -91,6 +91,12 @@ def csv(options):
     report.csv(options.output)
 
 
+def top(options):
+    report = gen_gcal_report(options)
+    for title, minutes in report.get_top_meetings(options.limit):
+        print '%s (%s)' % (title, minutes)
+
+
 def create_arg_parser():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
@@ -124,6 +130,12 @@ def create_arg_parser():
     _csv.add_argument('--team', help='Team name', required=True)
     _csv.add_argument('--output', help='Output CSV file path', type=str, required=True)
     _csv.add_argument('--days', help='Days', type=int, default=90)
+
+    _top = subparsers.add_parser('top')
+    _top.set_defaults(func=top)
+    _top.add_argument('--team', help='Team name', required=True)
+    _top.add_argument('--days', help='Days', type=int, default=90)
+    _top.add_argument('--limit', help='Limit', type=int, default=10)
 
     return parser
 
