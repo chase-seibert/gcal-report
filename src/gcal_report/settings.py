@@ -1,3 +1,9 @@
+import os
+
+
+CREDS_FILE = os.path.expanduser('~/.gcal-report-creds')
+CACHE_FILE = os.path.expanduser('~/.gcal-report-cache.json')
+
 DOMAIN = '@example.com'
 
 TEAMS = {
