@@ -22,6 +22,7 @@ First, you need to create a [Google API Project](https://console.developers.goog
 ./run.sh dump --team DATA  # show the raw meetings/day data
 ./run.sh report --team DATA  # generate a summary
 ./run.sh csv --team DATA --output ~/Desktop/team_data.csv  # output raw data
+./run.sh top --team DATA  # show top meetings for the team
 ```
 
 *Note: once you get rolling, it may be easier to hand-edit the config file at `~/.gcal-report`.*
