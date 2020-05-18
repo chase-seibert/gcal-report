@@ -13,8 +13,8 @@ from gcal_report.report import GCalReport
 
 
 def login(options):
-    client_id = raw_input('Client ID: ')
-    client_secret = raw_input('Client secret: ')
+    client_id = settings.CLIENT_ID or raw_input('Client ID: ')
+    client_secret = settings.CLIENT_SECRET or raw_input('Client secret: ')
     access_token = auth.generate_access_token(client_id, client_secret)
     print 'Success'
 
