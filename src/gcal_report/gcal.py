@@ -94,6 +94,9 @@ def get_calendar_events(calendar_id, start, end, pageToken=None):
             'datetime': start_datetime,
             'date': start_datetime.date(),
             'minutes': minutes,
+            'description': event.get('description'),
+            'location': event.get('location'),
+            'status': event.get('status'),
         }
 
         results.append(result)

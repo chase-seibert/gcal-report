@@ -1,4 +1,5 @@
 import argparse
+import csv
 import ConfigParser
 import datetime
 import os
@@ -42,13 +43,20 @@ def _get_relative_date_range(days_ago):
     return start, today
 
 
-def gen_gcal_report(options):
+def _gen_events(options):
     calendar_ids = _get_calendar_ids(options.team)
-    start, end = _get_relative_date_range(options.days)
-    report = GCalReport(start, end)
+    start, end = _get_relative_date_range(options.days)    
     for calendar_id in calendar_ids:
         events = gcal.get_calendar_events(calendar_id, start, end)
-        report.add_events(calendar_id, events)
+        for event in events:
+            yield calendar_id, event
+    
+
+def gen_gcal_report(options):
+    start, end = _get_relative_date_range(options.days)
+    report = GCalReport(start, end)
+    for calendar_id, event in _gen_events(options):
+        report.add_event(calendar_id, event)
     return report
 
 
@@ -64,9 +72,31 @@ def report(options):
     pp.pprint(report.summary())
 
 
-def csv(options):
-    report = gen_gcal_report(options)
-    report.csv(options.output)
+def _csv_value(value):
+    if type(value) == int:
+        return value
+    if type(value) == str or type(value) == unicode:
+        return value.encode('utf-8')
+    if type(value) == datetime.datetime:
+        # string that Excel can understand
+        return value.strftime('%Y-%m-%d %H:%M:%S')
+    raise NotImplementedError(type(value))
+
+
+def output_csv(options):
+    columns = [
+        'datetime',
+        'minutes',
+        'status',
+        'title',                      
+        'location',
+        'description',
+    ]    
+    with open(options.output, 'w') as csv_file:
+        csv_writer = csv.writer(csv_file)
+        csv_writer.writerow(columns)
+        for calendar_id, event in _gen_events(options):
+            csv_writer.writerow([_csv_value(event.get(c) or '') for c in columns])
 
 
 def top(options):
@@ -96,7 +126,7 @@ def create_arg_parser():
     _report.add_argument('--days', help='Days', type=int, default=90)
 
     _csv = subparsers.add_parser('csv')
-    _csv.set_defaults(func=csv)
+    _csv.set_defaults(func=output_csv)
     _csv.add_argument('--team', help='Team name', required=True)
     _csv.add_argument('--output', help='Output CSV file path', type=str, required=True)
     _csv.add_argument('--days', help='Days', type=int, default=90)
