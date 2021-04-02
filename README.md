@@ -56,17 +56,18 @@ Example:
 
 ```python
 def event_is_meeting(event):
-    # return False if you want to exclude a specific meeting
-    # event is a dict with fields like summary, description, etc
+    if event.get('summary') == None:
+        return False
     summary = event.get('summary', '')
+    location = event.get('location', '')
+    description = event.get('description', '')
     for token in (
-        'lunch',
-        'happy hour',
-        'water cooler',
-    ):
-        if token in summary.lower():
-            return False
-    return True
+        'zoom',
+        'mediaspace',
+    ):    
+        if token in location.lower() or token in description.lower():
+            return True
+    return False
 ```
 
 ## Run Reports
